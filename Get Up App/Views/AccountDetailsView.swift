@@ -9,6 +9,7 @@ struct AccountDetailsView: View {
         UserDefaults.standard.object(forKey: "accountsLastUpdated") as? Date
     @StateObject private var networkManager = NetworkManager()
     @State private var isLoading = false
+    @State private var error: String?
 
     /// Calculates the maximum width of the balance strings for proper alignment.
     var maxWidthOfBalance: CGFloat {
@@ -26,16 +27,26 @@ struct AccountDetailsView: View {
         VStack {
             if isLoading {
                 ProgressView("Loading...")
+            } else if error != nil {
+                Text("An error occured fetching account data").bold().padding(.vertical)
+                    .accessibilityHeading(AccessibilityHeadingLevel.h1)
+                Text(error!)
             } else {
                 List {
                     if !networkManager.accounts.isEmpty {
                         ForEach(networkManager.accounts, id: \.id) { account in
                             HStack {
                                 Text(account.attributes.emoji ?? "").frame(maxWidth: 24)
-                                Text(account.attributes.modifiedDisplayName ?? account.attributes.displayName).frame(maxWidth: .infinity, alignment: .leading)
-                                Text(account.attributes.accountType).frame(maxWidth: .infinity, alignment: .leading)
-                                Text(account.attributes.ownershipType).frame(maxWidth: .infinity, alignment: .leading)
-                                Text(account.attributes.balance.toString()).frame(maxWidth: maxWidthOfBalance, alignment: .trailing)
+                                Text(
+                                    account.attributes.modifiedDisplayName
+                                        ?? account.attributes.displayName
+                                ).frame(maxWidth: .infinity, alignment: .leading)
+                                Text(account.attributes.accountType).frame(
+                                    maxWidth: .infinity, alignment: .leading)
+                                Text(account.attributes.ownershipType).frame(
+                                    maxWidth: .infinity, alignment: .leading)
+                                Text(account.attributes.balance.toString()).frame(
+                                    maxWidth: maxWidthOfBalance, alignment: .trailing)
                             }
                         }
                     }
@@ -73,9 +84,14 @@ struct AccountDetailsView: View {
                 // Save the timestamp
                 lastUpdated = Date()
                 UserDefaults.standard.set(lastUpdated, forKey: "accountsLastUpdated")
-                
+
             case .failure(let error):
-                // TODO: Handle errors properly with feedback to the user
+                // If error is of type NetworkError.httpError(401)
+                if case NetworkError.httpError(let statusCode) = error, statusCode == 401 {
+                    self.error = "Unauthorized: Please check your API key."
+                } else {
+                    self.error = error.localizedDescription
+                }
                 print("Failed to fetch accounts: \(error.localizedDescription)")
             }
         }
