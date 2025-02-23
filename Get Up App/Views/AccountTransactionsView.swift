@@ -6,17 +6,15 @@ struct AccountTransactionsView: View {
 
     @StateObject private var networkManager = NetworkManager()
     @State private var isLoading = false
-    @State private var error: String?
+    @State private var error: Error?
     let account: Account
 
     var body: some View {
         VStack {
             if isLoading {
-                ProgressView("Loading...")
-            } else if error != nil {
-                Text("An error occurred fetching transaction data").bold().padding(.vertical)
-                    .accessibilityHeading(AccessibilityHeadingLevel.h1)
-                Text(error!)
+                LoadingView()
+            } else if let error = error {
+                NetworkErrorView(error: error)
             } else {
                 List {
                     if !networkManager.currentTransactions.isEmpty {
@@ -47,7 +45,7 @@ struct AccountTransactionsView: View {
                 // Noop
                 break
             case .failure(let error):
-                self.error = error.localizedDescription
+                self.error = error
                 print("Failed to fetch transactions: \(error.localizedDescription)")
             }
         }

@@ -9,7 +9,7 @@ struct AccountDetailsView: View {
         UserDefaults.standard.object(forKey: "accountsLastUpdated") as? Date
     @StateObject private var networkManager = NetworkManager()
     @State private var isLoading = false
-    @State private var error: String?
+    @State private var error: Error?
 
     /// Calculates the maximum width of the balance strings for proper alignment.
     var maxWidthOfBalance: CGFloat {
@@ -26,11 +26,9 @@ struct AccountDetailsView: View {
     var body: some View {
         VStack {
             if isLoading {
-                ProgressView("Loading...")
-            } else if error != nil {
-                Text("An error occured fetching account data").bold().padding(.vertical)
-                    .accessibilityHeading(AccessibilityHeadingLevel.h1)
-                Text(error!)
+                LoadingView()
+            } else if let error = error {
+                NetworkErrorView(error: error)
             } else {
                 List {
                     if !networkManager.accounts.isEmpty {
@@ -88,11 +86,7 @@ struct AccountDetailsView: View {
 
             case .failure(let error):
                 // If error is of type NetworkError.httpError(401)
-                if case NetworkError.httpError(let statusCode) = error, statusCode == 401 {
-                    self.error = "Unauthorized: Please check your API key."
-                } else {
-                    self.error = error.localizedDescription
-                }
+                self.error = error
                 print("Failed to fetch accounts: \(error.localizedDescription)")
             }
         }
