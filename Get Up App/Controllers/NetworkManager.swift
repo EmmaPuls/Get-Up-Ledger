@@ -1,72 +1,80 @@
-//
-//  NetworkManager.swift
-//  Get Up App
-//
-//  Created by Emma Puls on 22/2/2025.
-//
-
 import Foundation
 
+/// NetworkManager is responsible for handling network requests related to accounts.
 class NetworkManager: ObservableObject {
+    /// Published property to store the list of accounts.
     @Published var accounts: [Account] = []
 
-    func fetchAccounts(completion: @escaping (Bool) -> Void) {
-        print("0")
-        let apiAuth = UserDefaults.standard.string(forKey: "upBankAPIKey") ?? ""
-        let pageSize = 10
-        
-        if(apiAuth.isEmpty){
-            // exit with error
-            // Todo: Provide user with feedback on how to resolve this
-            completion(false)
+    /// Fetches accounts from the API.
+    /// - Parameter completion: A closure that gets called with the result of the fetch operation.
+    func fetchAccounts(completion: @escaping (Result<Bool, Error>) -> Void) {
+        // Retrieve the API key from UserDefaults.
+        guard let apiAuth = UserDefaults.standard.string(forKey: "upBankAPIKey"), !apiAuth.isEmpty else {
+            print("API key is missing. Please set your API key in the app settings.")
+            completion(.failure(NetworkError.missingAPIKey))
             return
         }
-        
-        
+
         let headers = [
             "Authorization": "Bearer \(apiAuth)"
         ]
-        
-        // ...existing code...
-        guard let url = URL(string: "https://api.up.com.au/api/v1/accounts") else {
-            completion(false)
+
+        // Construct the URL with query parameters.
+        var urlComponents = URLComponents(string: "https://api.up.com.au/api/v1/accounts")
+        urlComponents?.queryItems = [
+            URLQueryItem(name: "page[size]", value: "10")
+        ]
+
+        guard let url = urlComponents?.url else {
+            print("Invalid URL.")
+            completion(.failure(NetworkError.invalidURL))
             return
         }
-        
+
         var request = URLRequest(url: url)
         request.allHTTPHeaderFields = headers
         request.httpMethod = "GET"
-        print("request")
-        print(request)
-        print("requestHeaders")
-        print(request.allHTTPHeaderFields ?? [:])
-        let task = URLSession.shared.dataTask(with: request) { data, response, errors in
-            guard let data = data, errors == nil else {
-                print("error from the API")
-                completion(false)
+
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForRequest = 30.0
+        let session = URLSession(configuration: config)
+
+        // Perform the network request.
+        let task = session.dataTask(with: request) { data, response, error in
+            guard let data = data, error == nil else {
+                print("Error from the API: \(error?.localizedDescription ?? "Unknown error")")
+                completion(.failure(error ?? NetworkError.unknown))
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+                print("HTTP Error: \(httpResponse.statusCode)")
+                completion(.failure(NetworkError.httpError(httpResponse.statusCode)))
                 return
             }
 
             do {
                 let decoder = JSONDecoder()
-                print("data")
-                if let JSONString = String(data: data, encoding: String.Encoding.utf8) {
-                   print(JSONString)
-                }
-                print()
                 let accountResponse = try decoder.decode(AccountResponse.self, from: data)
-                print("accountResponse")
-                print(accountResponse)
+
                 DispatchQueue.main.async {
                     self.accounts = accountResponse.data
-                    completion(true)
+                    completion(.success(true))
                 }
-            } catch (let context) {
-                print("error decoding")
-                print(context)
-                completion(false)
+            } catch {
+                print("Error decoding JSON: \(error.localizedDescription)")
+                completion(.failure(NetworkError.decodingError(error)))
             }
         }
         task.resume()
     }
+}
+
+/// Enum representing possible network errors.
+enum NetworkError: Error {
+    case missingAPIKey
+    case invalidURL
+    case httpError(Int)
+    case decodingError(Error)
+    case unknown
 }
