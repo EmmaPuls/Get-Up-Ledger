@@ -5,14 +5,14 @@
 //  Created by Emma Puls on 22/2/2025.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct Get_Up_AppApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            Account.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -28,5 +28,8 @@ struct Get_Up_AppApp: App {
             ContentView()
         }
         .modelContainer(sharedModelContainer)
+        Settings {
+            SettingsView()
+        }
     }
 }
