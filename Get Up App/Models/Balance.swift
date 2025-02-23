@@ -37,3 +37,8 @@ struct Balance: Codable {
         return "$\(formattedDollars).\(formattedCents) \(currencyCode)"
     }
 }
+
+struct LocalAndForeignBalance: Codable {
+    var amount: Balance
+    var foreignAmount: Balance?
+}

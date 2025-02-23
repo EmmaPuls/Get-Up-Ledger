@@ -7,6 +7,7 @@ final class Account: Codable, Identifiable {
     var id: String
     var attributes: AccountAttributes
     var links: LinksResponse
+    var transactionLink: String
 
     enum CodingKeys: String, CodingKey {
         case type
@@ -14,6 +15,7 @@ final class Account: Codable, Identifiable {
         case attributes
         case relationships
         case links
+        case transactionLink
     }
 
     /// Initializes an Account instance from a decoder.
@@ -24,7 +26,7 @@ final class Account: Codable, Identifiable {
         attributes = try container.decode(AccountAttributes.self, forKey: .attributes)
         let relationships = try container.decode(RelationshipResponse.self, forKey: .relationships)
         links = try container.decode(LinksResponse.self, forKey: .links)
-        attributes.transactionLink = relationships.transactions.links.related
+        transactionLink = relationships.transactions.links.related!
     }
 
     /// Encodes the Account instance to an encoder.
@@ -46,7 +48,6 @@ struct AccountAttributes: Codable {
     var balance: Balance
     var createdAt: String
     var emoji: String?
-    var transactionLink: String?
 
     enum CodingKeys: String, CodingKey {
         case displayName
@@ -56,7 +57,6 @@ struct AccountAttributes: Codable {
         case balance
         case createdAt
         case emoji
-        case transactionLink
     }
 
     /// Initializes an AccountAttributes instance from a decoder.
@@ -89,7 +89,6 @@ struct AccountAttributes: Codable {
         try container.encode(createdAt, forKey: .createdAt)
         try container.encode(modifiedDisplayName, forKey: .modifiedDisplayName)
         try container.encode(emoji, forKey: .emoji)
-        try container.encode(transactionLink, forKey: .transactionLink)
     }
 }
 
@@ -100,7 +99,7 @@ struct AccountResponse: Codable {
 
 /// Represents the relationships of an account, specifically transactions.
 struct RelationshipResponse: Codable {
-    var transactions: TransactionResponse
+    var transactions: AccountTransactionLinkResponse
 
     enum CodingKeys: String, CodingKey {
         case transactions = "transactions"
@@ -109,7 +108,7 @@ struct RelationshipResponse: Codable {
     /// Initializes a RelationshipResponse instance from a decoder.
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        transactions = try container.decode(TransactionResponse.self, forKey: .transactions)
+        transactions = try container.decode(AccountTransactionLinkResponse.self, forKey: .transactions)
     }
 
     /// Encodes the RelationshipResponse instance to an encoder.
@@ -120,7 +119,7 @@ struct RelationshipResponse: Codable {
 }
 
 /// Represents a response containing transaction links.
-struct TransactionResponse: Codable {
+struct AccountTransactionLinkResponse: Codable {
     var links: LinksResponse
 
     enum CodingKeys: String, CodingKey {

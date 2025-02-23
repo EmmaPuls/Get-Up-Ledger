@@ -35,18 +35,20 @@ struct AccountDetailsView: View {
                 List {
                     if !networkManager.accounts.isEmpty {
                         ForEach(networkManager.accounts, id: \.id) { account in
-                            HStack {
-                                Text(account.attributes.emoji ?? "").frame(maxWidth: 24)
-                                Text(
-                                    account.attributes.modifiedDisplayName
-                                        ?? account.attributes.displayName
-                                ).frame(maxWidth: .infinity, alignment: .leading)
-                                Text(account.attributes.accountType).frame(
-                                    maxWidth: .infinity, alignment: .leading)
-                                Text(account.attributes.ownershipType).frame(
-                                    maxWidth: .infinity, alignment: .leading)
-                                Text(account.attributes.balance.toString()).frame(
-                                    maxWidth: maxWidthOfBalance, alignment: .trailing)
+                            NavigationLink(destination: AccountTransactionsView(account: account)) {
+                                HStack {
+                                    Text(account.attributes.emoji ?? "").frame(maxWidth: 24)
+                                    Text(
+                                        account.attributes.modifiedDisplayName
+                                            ?? account.attributes.displayName
+                                    ).frame(maxWidth: .infinity, alignment: .leading)
+                                    Text(account.attributes.accountType).frame(
+                                        maxWidth: .infinity, alignment: .leading)
+                                    Text(account.attributes.ownershipType).frame(
+                                        maxWidth: .infinity, alignment: .leading)
+                                    Text(account.attributes.balance.toString()).frame(
+                                        maxWidth: maxWidthOfBalance, alignment: .trailing)
+                                }
                             }
                         }
                     }
