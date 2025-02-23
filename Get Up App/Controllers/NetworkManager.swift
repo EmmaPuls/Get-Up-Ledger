@@ -101,7 +101,6 @@ class NetworkManager: ObservableObject {
             completion(.failure(NetworkError.invalidURL))
             return
         }
-        print("url: \(url)")
 
         var request = URLRequest(url: url)
         request.allHTTPHeaderFields = headers
@@ -127,7 +126,6 @@ class NetworkManager: ObservableObject {
 
             do {
                 let decoder = JSONDecoder()
-                print("Raw response body: \(String(data: data, encoding: .utf8) ?? "Empty")")
                 let transactionResponse = try decoder.decode(TransactionResponse.self, from: data)
 
                 DispatchQueue.main.async {

@@ -82,7 +82,6 @@ struct AccountDetailsView: View {
             isLoading = false
             switch result {
             case .success:
-                print(networkManager.accounts)
                 // Save the timestamp
                 lastUpdated = Date()
                 UserDefaults.standard.set(lastUpdated, forKey: "accountsLastUpdated")

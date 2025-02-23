@@ -3,6 +3,7 @@ import SwiftUI
 /// A view that displays the transactions of an account.
 struct AccountTransactionsView: View {
     @Environment(\.modelContext) private var modelContext
+
     @StateObject private var networkManager = NetworkManager()
     @State private var isLoading = false
     @State private var error: String?
@@ -43,7 +44,8 @@ struct AccountTransactionsView: View {
             isLoading = false
             switch result {
             case .success:
-                print(networkManager.currentTransactions)
+                // Noop
+                break
             case .failure(let error):
                 self.error = error.localizedDescription
                 print("Failed to fetch transactions: \(error.localizedDescription)")
