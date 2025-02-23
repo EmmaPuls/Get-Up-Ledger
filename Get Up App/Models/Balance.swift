@@ -1,3 +1,5 @@
+import Foundation
+
 struct Balance: Codable {
     var currencyCode: String
     var value: String
@@ -21,5 +23,17 @@ struct Balance: Codable {
         try container.encode(currencyCode, forKey: .currencyCode)
         try container.encode(value, forKey: .value)
         try container.encode(valueInBaseUnits, forKey: .valueInBaseUnits)
+    }
+    
+    // TODO: Let users define the number format
+    func toString() -> String {
+        // Format the valueInBaseUnits to a string format for dollars (including dollars and decimal points, assume the last two digits are the decimal points
+        let dollars = valueInBaseUnits / 100
+        let cents = valueInBaseUnits % 100
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        let formattedDollars = formatter.string(from: NSNumber(value: dollars)) ?? "\(dollars)"
+        let formattedCents = cents < 10 ? "0\(cents)" : "\(cents)"
+        return "$\(formattedDollars).\(formattedCents) \(currencyCode)"
     }
 }

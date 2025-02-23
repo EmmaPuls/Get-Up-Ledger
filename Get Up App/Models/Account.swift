@@ -12,6 +12,7 @@ final class Account: Codable, Identifiable {
         case type
         case id
         case attributes
+        case relationships
         case links
     }
 
