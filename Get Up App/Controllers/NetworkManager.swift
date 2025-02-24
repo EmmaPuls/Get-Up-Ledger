@@ -47,8 +47,10 @@ class NetworkManager: ObservableObject {
             do {
                 let decoder = JSONDecoder()
                 let decodedResponse = try decoder.decode(T.self, from: data)
+                let links = try decoder.decode(LinksResponse.self, from: data)
+                let nextPage = links.next
                 DispatchQueue.main.async {
-                    completion(.success(decodedResponse))
+                    completion(.success((decodedResponse)))
                 }
             } catch {
                 print("Failure: Decoding error \(error)")
@@ -58,49 +60,104 @@ class NetworkManager: ObservableObject {
         task.resume()
     }
 
-    /// Fetches accounts from the API.
-    /// - Parameter completion: A closure that gets called with the result of the fetch operation.
-    func fetchAccounts(completion: @escaping (Result<Bool, Error>) -> Void) {
-        guard let url = URL(string: "https://api.up.com.au/api/v1/accounts?page[size]=40") else {
+
+    /// Fetches the initial accounts from the API.
+    func fetchInitialAccounts(completion: @escaping (Result<String?, Error>) -> Void) {
+        guard let url = URL(string: "https://api.up.com.au/api/v1/accounts?page[size]=10") else {
             completion(.failure(NetworkError.invalidURL))
             return
         }
 
         performRequest(url: url) { (result: Result<AccountResponse, Error>) in
             switch result {
-            case .success(let accountResponse):
-                self.accounts = accountResponse.data
-                completion(.success(true))
+            case .success(let (accountResponse)):
+                DispatchQueue.main.async {
+                    self.accounts = accountResponse.data
+                    let nextPage = accountResponse.links.next
+                    completion(.success(nextPage))
+                }
             case .failure(let error):
-                print("Failure in fetchAccounts: \(error)")
+                print("Failure in fetchInitialAccounts: \(error)")
                 completion(.failure(error))
             }
         }
     }
 
-    /// Fetches the transactions from a given url.
-    /// - Parameters:
-    ///  - url: The URL to fetch the transactions from.
-    func fetchTransactions(from: String, completion: @escaping (Result<Bool, Error>) -> Void) {
-        if let cachedTransactions = accountTransactionsCache[from] {
-            currentTransactions = cachedTransactions
-            completion(.success(true))
+    /// Fetches the next page of accounts from a given url.
+    func fetchNextPageAccounts(from urlString: String, completion: @escaping (Result<String?, Error>) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NetworkError.invalidURL))
             return
         }
 
-        guard let url = URL(string: from + "?page[size]=40") else {
+        performRequest(url: url) { (result: Result<AccountResponse, Error>) in
+            switch result {
+            case .success(let (accountResponse)):
+                DispatchQueue.main.async {
+                    self.accounts.append(contentsOf: accountResponse.data)
+                    self.accounts = self.accounts // Trigger view update
+                    let nextPage = accountResponse.links.next
+                    completion(.success(nextPage))
+                }
+            case .failure(let error):
+                print("Failure in fetchNextPageAccounts: \(error)")
+                completion(.failure(error))
+            }
+        }
+    }
+
+    /// Fetches the initial transactions from a given url.
+    /// - Parameters:
+    ///  - url: The URL to fetch the transactions from.
+    func fetchInitialTransactions(from urlString: String, completion: @escaping (Result<String?, Error>) -> Void) {
+        if let cachedTransactions = accountTransactionsCache[urlString] {
+            currentTransactions = cachedTransactions
+            completion(.success(nil))
+            return
+        }
+
+        guard let url = URL(string: urlString + "?page[size]=40") else {
+            return
+        }
+
+        performRequest(url: url) { (result: Result<TransactionResponse, Error>) in
+            switch result {
+            case .success(let (transactionResponse)):
+                DispatchQueue.main.async {
+                    self.currentTransactions = transactionResponse.data
+                    self.accountTransactionsCache[urlString] = self.currentTransactions
+                    let nextPage = transactionResponse.links.next
+                    completion(.success(nextPage))
+                }
+            case .failure(let error):
+                print("Failure in fetchInitialTransactions: \(error)")
+                completion(.failure(error))
+            }
+        }
+    }
+
+    /// Fetches the next page of transactions from a given url.
+    /// - Parameters:
+    ///  - url: The URL to fetch the transactions from.
+    func fetchNextPageTransactions(from urlString: String, completion: @escaping (Result<String?, Error>) -> Void) {
+        guard let url = URL(string: urlString) else {
             completion(.failure(NetworkError.invalidURL))
             return
         }
 
         performRequest(url: url) { (result: Result<TransactionResponse, Error>) in
             switch result {
-            case .success(let transactionResponse):
-                self.currentTransactions = transactionResponse.data
-                self.accountTransactionsCache[from] = transactionResponse.data
-                completion(.success(true))
+            case .success(let (transactionResponse)):
+                DispatchQueue.main.async {
+                    let newTransactions = transactionResponse.data.filter { !self.currentTransactions.contains($0) }
+                    self.currentTransactions.append(contentsOf: newTransactions)
+                    self.currentTransactions = self.currentTransactions // Trigger view update
+                    self.accountTransactionsCache[urlString] = self.currentTransactions
+                    let nextPage = transactionResponse.links.next
+                    completion(.success(nextPage))
+                }
             case .failure(let error):
-                print("Failure in fetchTransactions: \(error)")
+                print("Failure in fetchNextPageTransactions: \(error)")
                 completion(.failure(error))
             }
         }
@@ -115,3 +172,4 @@ enum NetworkError: Error {
     case decodingError(Error)
     case unknown
 }
+

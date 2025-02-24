@@ -9,7 +9,9 @@ struct AccountDetailsView: View {
         UserDefaults.standard.object(forKey: "accountsLastUpdated") as? Date
     @StateObject private var networkManager = NetworkManager()
     @State private var isLoading = false
+    @State private var isGettingNextPage = false
     @State private var error: Error?
+    @State private var nextPageURL: String?
 
     /// Calculates the maximum width of the balance strings for proper alignment.
     var maxWidthOfBalance: CGFloat {
@@ -45,10 +47,21 @@ struct AccountDetailsView: View {
                                     Text(account.attributes.ownershipType).frame(
                                         maxWidth: .infinity, alignment: .leading)
                                     Text(account.attributes.balance.toString()).frame(
-                                        maxWidth: maxWidthOfBalance, alignment: .trailing)
+                                        maxWidth: maxWidthOfBalance, alignment: .trailing
+                                    )
+                                    .onAppear {
+                                        // Exit early if next page is nil or already fetching
+                                        guard let nextPageURL = nextPageURL, !isGettingNextPage else {
+                                            return
+                                        }
+                                        fetchNextPage()
+                                    }
                                 }
                             }
                         }
+                    }
+                    if isGettingNextPage {
+                        ProgressView()
                     }
                 }.padding(16)
             }
@@ -76,10 +89,11 @@ struct AccountDetailsView: View {
     /// Fetches new data from the network and updates the cache.
     func fetchNewData() {
         isLoading = true
-        networkManager.fetchAccounts { result in
+        networkManager.fetchInitialAccounts { result in
             isLoading = false
             switch result {
-            case .success:
+            case .success(let nextPage):
+                self.nextPageURL = nextPage
                 // Save the timestamp
                 lastUpdated = Date()
                 UserDefaults.standard.set(lastUpdated, forKey: "accountsLastUpdated")
@@ -88,6 +102,22 @@ struct AccountDetailsView: View {
                 // If error is of type NetworkError.httpError(401)
                 self.error = error
                 print("Failed to fetch accounts: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    func fetchNextPage() {
+        guard let nextPageURL = nextPageURL else { return }
+        isGettingNextPage = true
+        networkManager.fetchNextPageAccounts(from: nextPageURL) { result in
+            switch result {
+            case .success(let nextPage):
+                self.nextPageURL = nextPage
+                isGettingNextPage = false
+            case .failure(let error):
+                self.error = error
+                print("Failed to fetch next page: \(error.localizedDescription)")
+                isGettingNextPage = false
             }
         }
     }
