@@ -45,10 +45,21 @@ struct AccountDetailsView: View {
                                     Text(account.attributes.ownershipType).frame(
                                         maxWidth: .infinity, alignment: .leading)
                                     Text(account.attributes.balance.toString()).frame(
-                                        maxWidth: maxWidthOfBalance, alignment: .trailing)
+                                        maxWidth: maxWidthOfBalance, alignment: .trailing
+                                    )
+                                    .onAppear {
+                                        // Exit early if next page is nil or already fetching
+                                        guard nextPageURL != nil, !isGettingNextPage else {
+                                            return
+                                        }
+                                        fetchNextPage()
+                                    }
                                 }
                             }
                         }
+                    }
+                    if isGettingNextPage {
+                        ProgressView()
                     }
                 }.padding(16)
             }
