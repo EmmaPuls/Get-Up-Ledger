@@ -47,8 +47,6 @@ class NetworkManager: ObservableObject {
             do {
                 let decoder = JSONDecoder()
                 let decodedResponse = try decoder.decode(T.self, from: data)
-                let links = try decoder.decode(LinksResponse.self, from: data)
-                let nextPage = links.next
                 DispatchQueue.main.async {
                     completion(.success((decodedResponse)))
                 }

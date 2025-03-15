@@ -51,7 +51,7 @@ struct AccountDetailsView: View {
                                     )
                                     .onAppear {
                                         // Exit early if next page is nil or already fetching
-                                        guard let nextPageURL = nextPageURL, !isGettingNextPage else {
+                                        guard nextPageURL != nil, !isGettingNextPage else {
                                             return
                                         }
                                         fetchNextPage()

@@ -2,7 +2,7 @@ import SwiftData
 import SwiftUI
 
 /// The main content view of the application.
-struct ContentView: View {
+struct SplitViewNavigation: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.openSettings) private var openSettings
 
@@ -47,5 +47,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    SplitViewNavigation()
 }
