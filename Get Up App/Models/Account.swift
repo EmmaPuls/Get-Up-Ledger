@@ -16,6 +16,14 @@ final class Account: Codable, Identifiable, Equatable {
         case transactionLink
     }
 
+    /// Standard initializer for creating Account instances
+    init(type: String, id: String, attributes: AccountAttributes, transactionLink: String) {
+        self.type = type
+        self.id = id
+        self.attributes = attributes
+        self.transactionLink = transactionLink
+    }
+
     /// Initializes an Account instance from a decoder.
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -57,6 +65,24 @@ struct AccountAttributes: Codable {
         case balance
         case createdAt
         case emoji
+    }
+
+    /// Standard initializer for creating AccountAttributes instances
+    init(displayName: String, accountType: String, ownershipType: String, balance: Balance, createdAt: String) {
+        self.displayName = displayName
+        self.accountType = accountType
+        self.ownershipType = ownershipType
+        self.balance = balance
+        self.createdAt = createdAt
+        
+        // If the first character in displayName is an emoji, remove it and add it to the emoji property
+        if let firstCharacter = displayName.first, firstCharacter.isEmoji {
+            self.emoji = String(firstCharacter)
+            self.modifiedDisplayName = String(displayName.dropFirst())
+        } else {
+            self.emoji = nil
+            self.modifiedDisplayName = displayName
+        }
     }
 
     /// Initializes an AccountAttributes instance from a decoder.
