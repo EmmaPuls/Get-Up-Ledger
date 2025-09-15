@@ -1,3 +1,5 @@
+<img width="80" height="80" alt="image" src="https://github.com/user-attachments/assets/cee7151c-6c47-433f-b18b-ecdf43a57981" /> 
+
 ### Get Up Ledger 
 <img width="911" height="458" alt="Screenshot of the Get Up Ledger App showing three accounts and their current balances" src="https://github.com/user-attachments/assets/8f4f65f7-e9ad-4cb7-ae2b-6d92ea2cca2c" />
 
