@@ -50,11 +50,14 @@ struct AccountDetailsView: View {
                                         maxWidth: maxWidthOfBalance, alignment: .trailing
                                     )
                                     .onAppear {
-                                        // Exit early if next page is nil or already fetching
-                                        guard nextPageURL != nil, !isGettingNextPage else {
-                                            return
+                                        // Check if this is the last account in the list
+                                        if account.id == networkManager.accounts.last?.id {
+                                            // Exit early if next page is nil or already fetching
+                                            guard nextPageURL != nil, !isGettingNextPage else {
+                                                return
+                                            }
+                                            fetchNextPage()
                                         }
-                                        fetchNextPage()
                                     }
                                 }
                             }

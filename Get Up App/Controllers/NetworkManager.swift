@@ -93,7 +93,6 @@ class NetworkManager: ObservableObject {
             case .success(let (accountResponse)):
                 DispatchQueue.main.async {
                     self.accounts.append(contentsOf: accountResponse.data)
-                    self.accounts = self.accounts // Trigger view update
                     let nextPage = accountResponse.links.next
                     completion(.success(nextPage))
                 }
@@ -149,7 +148,6 @@ class NetworkManager: ObservableObject {
                 DispatchQueue.main.async {
                     let newTransactions = transactionResponse.data.filter { !self.currentTransactions.contains($0) }
                     self.currentTransactions.append(contentsOf: newTransactions)
-                    self.currentTransactions = self.currentTransactions // Trigger view update
                     self.accountTransactionsCache[urlString] = self.currentTransactions
                     let nextPage = transactionResponse.links.next
                     completion(.success(nextPage))
