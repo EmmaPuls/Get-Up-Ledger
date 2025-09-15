@@ -25,7 +25,7 @@ struct Get_Up_AppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplitViewNavigation()
         }
         .modelContainer(sharedModelContainer)
         Settings {

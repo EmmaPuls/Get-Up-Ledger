@@ -6,7 +6,8 @@
 //
 
 // TODO: Add Tranaction relationships field
-final class Transaction: Codable, Identifiable {
+final class Transaction: Codable, Identifiable, Equatable {
+    
     let id: String
     let type: String
     let attributes: TransactionAttributes
@@ -30,6 +31,10 @@ final class Transaction: Codable, Identifiable {
         try container.encode(id, forKey: .id)
         try container.encode(type, forKey: .type)
         try container.encode(attributes, forKey: .attributes)
+    }
+
+    static func == (lhs: Transaction, rhs: Transaction) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
@@ -89,12 +94,14 @@ struct TransactionAttributes: Codable {
         cashBack = try container.decodeIfPresent(CashBack.self, forKey: .cashBack)
         amount = try container.decode(Balance.self, forKey: .amount)
         foreignAmount = try container.decodeIfPresent(Balance.self, forKey: .foreignAmount)
-        cardPurchaseMethod = try container.decodeIfPresent(CardPurchaseMethod.self, forKey: .cardPurchaseMethod)
+        cardPurchaseMethod = try container.decodeIfPresent(
+            CardPurchaseMethod.self, forKey: .cardPurchaseMethod)
         settledAt = try container.decodeIfPresent(String.self, forKey: .settledAt)
         createdAt = try container.decode(String.self, forKey: .createdAt)
         transactionType = try container.decodeIfPresent(String.self, forKey: .transactionType)
         note = try container.decodeIfPresent(Note.self, forKey: .note)
-        performingCustomer = try container.decodeIfPresent(Customer.self, forKey: .performingCustomer)
+        performingCustomer = try container.decodeIfPresent(
+            Customer.self, forKey: .performingCustomer)
         deepLinkURL = try container.decodeIfPresent(String.self, forKey: .deepLinkURL)
     }
 
@@ -121,7 +128,7 @@ struct TransactionAttributes: Codable {
 }
 
 struct RoundUp: Codable {
-    let amount:  Balance
+    let amount: Balance
     let boostPortion: Balance?
 }
 
@@ -141,4 +148,5 @@ struct Note: Codable {
 
 struct TransactionResponse: Codable {
     let data: [Transaction]
+    let links: LinksResponse
 }
