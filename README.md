@@ -1,6 +1,10 @@
 ### Get Up Ledger 
 <img width="911" height="458" alt="Screenshot of the Get Up Ledger App showing three accounts and their current balances" src="https://github.com/user-attachments/assets/8f4f65f7-e9ad-4cb7-ae2b-6d92ea2cca2c" />
 
+#### Requirements
+- Up Bank account and API key
+- MacOS 14.0+
+- Xcode (to build it, will release it soon)
 
 This app currently only works with Up Bank.
 
