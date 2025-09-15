@@ -32,7 +32,7 @@ If you want to download the data for a particular account click the "Download Al
 - Please open an [Issue on Github](https://github.com/EmmaPuls/Get-Up-Ledger/issues) to request new features or report bugs
 
 ### My Todo list (long term)
-- Add category handling
+- Add category & tag handling
 - Add localisation for different languages 
   *If you have a preferred language please create an issue and I'll focus on those first when I start this*
 - Allow selecting a date range to download data
