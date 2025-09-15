@@ -11,6 +11,13 @@ struct Balance: Codable {
         case valueInBaseUnits
     }
 
+    /// Standard initializer for creating Balance instances
+    init(currencyCode: String, value: String, valueInBaseUnits: Int) {
+        self.currencyCode = currencyCode
+        self.value = value
+        self.valueInBaseUnits = valueInBaseUnits
+    }
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         currencyCode = try container.decode(String.self, forKey: .currencyCode)
