@@ -72,7 +72,12 @@ struct AccountAttributes: Codable {
         // If the first character in displayName is an emoji, remove it and add it to the emoji property
         if let firstCharacter = displayName.first, firstCharacter.isEmoji {
             emoji = String(firstCharacter)
-            modifiedDisplayName = String(displayName.dropFirst())
+            modifiedDisplayName = displayName.dropFirst().trimmingCharacters(in: .whitespaces)
+        } else if accountType == "TRANSACTIONAL" {
+            // GUA-9: transactional accounts never carry a user-defined emoji, so fall back to a
+            // credit-card glyph to keep the emoji column aligned with saver rows.
+            emoji = "💳"
+            modifiedDisplayName = displayName
         } else {
             emoji = nil
             modifiedDisplayName = displayName
