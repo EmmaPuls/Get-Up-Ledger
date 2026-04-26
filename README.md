@@ -31,11 +31,5 @@ If you want to download the data for a particular account click the "Download Al
 ### Requests for changes
 - Please open an [Issue on Github](https://github.com/EmmaPuls/Get-Up-Ledger/issues) to request new features or report bugs
 
-### My Todo list (long term)
-- Add category & tag handling
-- Add localisation for different languages 
-  *If you have a preferred language please create an issue and I'll focus on those first when I start this*
-- Allow selecting a date range to download data
-
-### Known bugs
-- Some accounts do not appear to have the emoji in the correct column
+### Follow-ups & known bugs
+See [FOLLOWUPS.md](FOLLOWUPS.md) for the long-term roadmap, known bugs, and in-code TODOs (all tracked in [Jira](https://emmapuls.atlassian.net/browse/KAN)).

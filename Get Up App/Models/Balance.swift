@@ -25,7 +25,7 @@ struct Balance: Codable {
         try container.encode(valueInBaseUnits, forKey: .valueInBaseUnits)
     }
     
-    // TODO: Let users define the number format
+    // TODO: Let users define the number format — https://emmapuls.atlassian.net/browse/KAN-4
     func toString() -> String {
         // Format the valueInBaseUnits to a string format for dollars (including dollars and decimal points, assume the last two digits are the decimal points
         let dollars = valueInBaseUnits / 100

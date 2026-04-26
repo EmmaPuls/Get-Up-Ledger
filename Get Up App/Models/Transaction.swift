@@ -5,7 +5,7 @@
 //  Created by Emma Puls on 23/2/2025.
 //
 
-// TODO: Add Tranaction relationships field
+// TODO: Add Transaction relationships field — https://emmapuls.atlassian.net/browse/KAN-5
 final class Transaction: Codable, Identifiable, Equatable {
     
     let id: String
