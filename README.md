@@ -45,3 +45,5 @@ brew install knope-dev/tap/knope
 The pinned version is **0.22.4** (matching the `knope-dev/action@v2.1.2` step in `.github/workflows/release.yml`). Verify with `knope --version`.
 
 When you make a change that should appear in `CHANGELOG.md`, run `knope document-change`, pick a severity (`patch` / `minor` / `major`), and commit the generated file in `.changeset/` alongside your code.
+
+Changesets are required to merge PRs
