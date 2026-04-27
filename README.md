@@ -33,3 +33,15 @@ If you want to download the data for a particular account click the "Download Al
 
 ### Follow-ups & known bugs
 See [FOLLOWUPS.md](FOLLOWUPS.md) for the long-term roadmap, known bugs, and in-code TODOs (all tracked in [Jira](https://emmapuls.atlassian.net/browse/KAN)).
+
+### Contributing
+
+Releases are managed with [knope](https://knope.tech) and per-change changesets. Contributors should install knope locally so they can run `knope document-change` when a PR introduces a user-visible change.
+
+```sh
+brew install knope-dev/tap/knope
+```
+
+The pinned version is **0.22.4** (matching the `knope-dev/action@v2.1.2` step in `.github/workflows/release.yml`). Verify with `knope --version`.
+
+When you make a change that should appear in `CHANGELOG.md`, run `knope document-change`, pick a severity (`patch` / `minor` / `major`), and commit the generated file in `.changeset/` alongside your code.
