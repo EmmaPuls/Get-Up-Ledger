@@ -1,0 +1,26 @@
+# Knope release pipeline configuration — https://knope.tech
+#
+# Scaffolded by GUA-22. The version source (VERSION file) is a placeholder
+# that GUA-23 will reconcile with the Xcode MARKETING_VERSION. The release
+# workflow is a stub that GUA-24 will fill in (commit, push, Release step,
+# forge config).
+
+[package]
+versioned_files = [
+    { path = "VERSION", regex = "(?<version>\\d+\\.\\d+\\.\\d+)" },
+]
+changelog = "CHANGELOG.md"
+
+[[workflows]]
+name = "document-change"
+help_text = "Create a changeset entry under .changeset/ describing the change"
+
+[[workflows.steps]]
+type = "CreateChangeFile"
+
+[[workflows]]
+name = "release"
+help_text = "Prepare a release from accumulated changesets (stub — finalised in GUA-24)"
+
+[[workflows.steps]]
+type = "PrepareRelease"
