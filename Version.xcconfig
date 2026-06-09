@@ -11,4 +11,4 @@
 //
 // Build number (CURRENT_PROJECT_VERSION / CFBundleVersion) is intentionally NOT
 // managed here — see GUA-24 "Out of scope".
-MARKETING_VERSION = 1.1.0
+MARKETING_VERSION = 1.1.1
