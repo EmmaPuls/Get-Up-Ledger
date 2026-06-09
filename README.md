@@ -33,3 +33,9 @@ If you want to download the data for a particular account click the "Download Al
 
 ### Follow-ups & known bugs
 See [FOLLOWUPS.md](FOLLOWUPS.md) for the long-term roadmap, known bugs, and in-code TODOs (all tracked in [Jira](https://emmapuls.atlassian.net/browse/KAN)).
+
+### Contributing
+
+Releases are managed with [knope](https://knope.tech) and per-change changesets. Every PR that introduces a user-visible change must add a changeset, or CI will fail.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide on installing knope, adding a changeset, and cutting a release.

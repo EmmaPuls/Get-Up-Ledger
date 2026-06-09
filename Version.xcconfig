@@ -1,0 +1,14 @@
+// Version.xcconfig — canonical marketing version source (GUA-24)
+//
+// MARKETING_VERSION maps to CFBundleShortVersionString (e.g. 1.2.0), the
+// user-facing release version. This file is the single source of truth and is
+// rewritten automatically by knope on `knope prepare-release`. Do NOT edit the
+// version by hand during a release.
+//
+// Referenced as the project-level baseConfigurationReference in
+// "Get Up App.xcodeproj", so every target inherits it. No per-target
+// MARKETING_VERSION override should be reintroduced, or it would mask this value.
+//
+// Build number (CURRENT_PROJECT_VERSION / CFBundleVersion) is intentionally NOT
+// managed here — see GUA-24 "Out of scope".
+MARKETING_VERSION = 1.1.0

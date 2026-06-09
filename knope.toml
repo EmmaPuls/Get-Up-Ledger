@@ -1,0 +1,28 @@
+# Knope release pipeline configuration — https://knope.tech
+#
+# Scaffolded by GUA-22. GUA-24 wired the canonical marketing version into
+# Version.xcconfig (MARKETING_VERSION = CFBundleShortVersionString), which the
+# Xcode project references at the project level so every target inherits it.
+# knope rewrites that key on `prepare-release`; no manual pbxproj edits needed.
+# The release workflow remains a stub (commit, push, Release step, forge config
+# land in a later ticket).
+
+[package]
+versioned_files = [
+    { path = "Version.xcconfig", regex = "MARKETING_VERSION = (?<version>\\d+\\.\\d+\\.\\d+)" },
+]
+changelog = "CHANGELOG.md"
+
+[[workflows]]
+name = "document-change"
+help_text = "Create a changeset entry under .changeset/ describing the change"
+
+[[workflows.steps]]
+type = "CreateChangeFile"
+
+[[workflows]]
+name = "release"
+help_text = "Prepare a release from accumulated changesets (stub — finalised in GUA-24)"
+
+[[workflows.steps]]
+type = "PrepareRelease"
