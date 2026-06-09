@@ -181,6 +181,31 @@ plutil -replace ApplicationProperties.Team -string <TEAM_ID> \
 Reopen the Organizer and distribute — Automatic signing re-signs at export, so
 the empty `SigningIdentity` is filled in then.
 
+### Building a DMG with the helper script
+
+[`scripts/build-dmg.sh`](scripts/build-dmg.sh) automates archive → validate →
+DMG for distributing the app as a disk image (outside the App Store). It:
+
+1. Archives the **Get Up App** scheme (`Release`, signed with `DEVELOPMENT_TEAM`).
+2. Opens the archive in the Organizer and **waits** for you to validate it
+   (Distribute App → choose method → Validate), then prompts for confirmation.
+3. Packages the archived `.app` into a `.dmg` with
+   [`create-dmg`](https://github.com/create-dmg/create-dmg).
+
+```sh
+brew install create-dmg   # one-time
+./scripts/build-dmg.sh
+```
+
+Output lands in `build/` (gitignored): `Get Up Ledger-<version>.xcarchive` and
+`Get Up Ledger-<version>.dmg`, where `<version>` is `MARKETING_VERSION` from
+[`Version.xcconfig`](Version.xcconfig). Override `CONFIG`, `DEVELOPMENT_TEAM`,
+or `BUILD_DIR` via environment variables.
+
+The **DMG is not code-signed** (no Developer ID certificate); the `.app` inside
+keeps its archive signature. This artifact is for direct distribution, separate
+from the App Store upload path above.
+
 ## CI checks
 
 - **Changeset exists** — every PR against `main` must add a file under
