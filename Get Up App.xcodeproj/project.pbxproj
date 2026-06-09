@@ -24,11 +24,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		3FAA00012D699ED70056B2F6 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		3F94C0E22D699ED60056B2F6 /* Get Up Ledger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Get Up Ledger.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F94C0F52D699ED70056B2F6 /* Get Up AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Get Up AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F94C0FF2D699ED70056B2F6 /* Get Up AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Get Up AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		/* End PBXFileReference section */
+		3FAA00012D699ED70056B2F6 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
+/* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3F94C0E42D699ED60056B2F6 /* Get Up App */ = {
