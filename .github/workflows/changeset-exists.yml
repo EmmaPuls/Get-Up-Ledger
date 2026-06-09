@@ -36,7 +36,7 @@ jobs:
       - name: Fail if no changeset file is added
         env:
           ADDED_FILES: ${{ steps.changed-files.outputs.added_files }}
-        if: !contains(steps.changed-files.outputs.added_files , '.changeset/' )
+        if: ${{ !contains(steps.changed-files.outputs.added_files, '.changeset/' ) }}
         run: |
           echo "Error: No changeset file added. Please add a changeset file in the .changeset/ directory."
           exit 1
