@@ -128,6 +128,59 @@ Tags are `v`-prefixed (`v1.2.0`); the branch and `MARKETING_VERSION` are not
 > a smoke test (verifies the pinned knope version installs and `knope.toml`
 > parses). Automating steps 4–5 is tracked for a later ticket.
 
+## Building and signing the archive
+
+Release builds are archived and signed **locally in Xcode** on a Mac. There is
+no CI archive step — the `Release` workflow only smoke-tests knope. Building on
+your own machine guarantees the archive is signed with the team's certificate
+and provisioning profile, which the App Store upload requires.
+
+### 1. Build the archive
+
+1. Open `Get Up App.xcodeproj` in Xcode.
+2. Select the **Get Up App** scheme and set the destination to **Any Mac
+   (Apple Silicon, Intel)**.
+3. Make sure the version is current — `MARKETING_VERSION` in
+   [`Version.xcconfig`](Version.xcconfig) is set by `knope release` (see above),
+   and the build number lives in the Xcode project.
+4. **Product → Archive.**
+
+Signing is **Automatic** with the team's `DEVELOPMENT_TEAM` set in the project,
+so Xcode picks the matching certificate and profile. Do not build with signing
+disabled — an unsigned archive has empty `Team` / `SigningIdentity` fields and
+the Organizer rejects it (see troubleshooting below).
+
+### 2. Distribute
+
+1. The Organizer opens on the new archive (or **Window → Organizer**).
+2. **Distribute App** → choose the destination (App Store Connect or Developer
+   ID) → **Automatic** signing → upload or export.
+
+### Troubleshooting: "No Team Found in Archive"
+
+```
+No Team Found in Archive
+Use the Signing & Capabilities editor to assign a team to the targets and
+build a new archive.
+```
+
+This means the archive was built **unsigned** — its `Info.plist`
+`ApplicationProperties` has empty `Team` and `SigningIdentity`. Rebuild via
+**Product → Archive** with Automatic signing (the normal path above produces a
+signed archive).
+
+To unblock an already-built archive without rebuilding, inject the team ID into
+its `Info.plist` (replace `<TEAM_ID>` with your Apple Developer team ID and the
+path with your archive):
+
+```sh
+plutil -replace ApplicationProperties.Team -string <TEAM_ID> \
+  "$HOME/Library/Developer/Xcode/Archives/<DATE>/<ARCHIVE>.xcarchive/Info.plist"
+```
+
+Reopen the Organizer and distribute — Automatic signing re-signs at export, so
+the empty `SigningIdentity` is filled in then.
+
 ## CI checks
 
 - **Changeset exists** — every PR against `main` must add a file under

@@ -3,3 +3,4 @@ Cargo.toml
 .DS_Store
 UserInterfaceState.xcuserstate
 /AppData
+/build
