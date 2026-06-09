@@ -10,6 +10,11 @@ import SwiftUI
 
 @main
 struct Get_Up_AppApp: App {
+    init() {
+        // Move any token saved by a pre-Keychain (and pre-sandbox) build into the Keychain.
+        KeychainStore.migrateFromUserDefaultsIfNeeded()
+    }
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Account.self
