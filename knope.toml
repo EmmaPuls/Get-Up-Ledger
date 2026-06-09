@@ -1,13 +1,15 @@
 # Knope release pipeline configuration — https://knope.tech
 #
-# Scaffolded by GUA-22. The version source (VERSION file) is a placeholder
-# that GUA-23 will reconcile with the Xcode MARKETING_VERSION. The release
-# workflow is a stub that GUA-24 will fill in (commit, push, Release step,
-# forge config).
+# Scaffolded by GUA-22. GUA-24 wired the canonical marketing version into
+# Version.xcconfig (MARKETING_VERSION = CFBundleShortVersionString), which the
+# Xcode project references at the project level so every target inherits it.
+# knope rewrites that key on `prepare-release`; no manual pbxproj edits needed.
+# The release workflow remains a stub (commit, push, Release step, forge config
+# land in a later ticket).
 
 [package]
 versioned_files = [
-    { path = "VERSION", regex = "(?<version>\\d+\\.\\d+\\.\\d+)" },
+    { path = "Version.xcconfig", regex = "MARKETING_VERSION = (?<version>\\d+\\.\\d+\\.\\d+)" },
 ]
 changelog = "CHANGELOG.md"
 
