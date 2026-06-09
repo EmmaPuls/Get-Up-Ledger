@@ -1,0 +1,42 @@
+name: Changeset exists
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+    # Optional: Only run on specific file changes
+    # paths:
+    #   - "src/**/*.ts"
+    #   - "src/**/*.tsx"
+    #   - "src/**/*.js"
+    #   - "src/**/*.jsx"
+
+jobs:
+  changeset-exists:
+    # Optional: Filter by PR author
+    # if: |
+    #   github.event.pull_request.user.login == 'external-contributor' ||
+    #   github.event.pull_request.user.login == 'new-developer' ||
+    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+
+    steps:
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@9426d40962ed5378910ee2e21d5f8c6fcbf2dd96 # v47.0.6
+
+      - name: Pass if changeset file is added
+        env:
+          ADDED_FILES: ${{ steps.changed-files.outputs.added_files }}
+        if: contains(steps.changed-files.outputs.added_files, '.changeset/' )
+        run: echo "Changeset file added"
+
+      - name: Fail if no changeset file is added
+        env:
+          ADDED_FILES: ${{ steps.changed-files.outputs.added_files }}
+        if: ${{ !contains(steps.changed-files.outputs.added_files, '.changeset/' ) }}
+        run: |
+          echo "Error: No changeset file added. Please add a changeset file in the .changeset/ directory."
+          exit 1
