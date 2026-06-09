@@ -6,7 +6,7 @@ import SwiftUI
 
 struct GeneralSettings: View {
     @AppStorage("bankAPI") private var bankAPI: String = "Up"
-    @AppStorage("upBankAPIKey") private var upBankAPIKey: String = ""
+    @State private var upBankAPIKey: String = KeychainStore.get() ?? ""
 
     var body: some View {
         Form {
@@ -14,7 +14,11 @@ struct GeneralSettings: View {
                 Text("Up Bank").tag("Up")
             }.pickerStyle(.menu)
 
-            SecureField("API Key", text: $upBankAPIKey).textFieldStyle(.roundedBorder)
+            SecureField("API Key", text: $upBankAPIKey)
+                .textFieldStyle(.roundedBorder)
+                .onChange(of: upBankAPIKey) { _, newValue in
+                    KeychainStore.set(newValue)
+                }
         }
         .padding()
     }

@@ -12,8 +12,8 @@ class NetworkManager: ObservableObject {
     ///   - url: The URL to fetch data from.
     ///   - completion: A closure that gets called with the result of the fetch operation.
     private func performRequest<T: Decodable>(url: URL, completion: @escaping (Result<T, Error>) -> Void) {
-        // Retrieve the API key from UserDefaults.
-        guard let apiAuth = UserDefaults.standard.string(forKey: "upBankAPIKey"), !apiAuth.isEmpty else {
+        // Retrieve the API key from the Keychain.
+        guard let apiAuth = KeychainStore.get(), !apiAuth.isEmpty else {
             print("Failure: Missing API Key")
             completion(.failure(NetworkError.missingAPIKey))
             return
