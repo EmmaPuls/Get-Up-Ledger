@@ -5,12 +5,12 @@
 //  Created by Emma Puls on 23/2/2025.
 //
 
-// TODO: Add Transaction relationships field — https://emmapuls.atlassian.net/browse/KAN-5
 final class Transaction: Codable, Identifiable, Equatable {
     
     let id: String
     let type: String
     let attributes: TransactionAttributes
+    let relationships: TransactionRelationships
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -24,6 +24,7 @@ final class Transaction: Codable, Identifiable, Equatable {
         id = try container.decode(String.self, forKey: .id)
         type = try container.decode(String.self, forKey: .type)
         attributes = try container.decode(TransactionAttributes.self, forKey: .attributes)
+        relationships = try container.decode(TransactionRelationships.self, forKey: .relationships)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -31,11 +32,49 @@ final class Transaction: Codable, Identifiable, Equatable {
         try container.encode(id, forKey: .id)
         try container.encode(type, forKey: .type)
         try container.encode(attributes, forKey: .attributes)
+        try container.encode(relationships, forKey: .relationships)
     }
 
     static func == (lhs: Transaction, rhs: Transaction) -> Bool {
         return lhs.id == rhs.id
     }
+}
+
+/// The resources linked to an Up Bank transaction.
+struct TransactionRelationships: Codable {
+    let account: TransactionToOneRelationship
+    let transferAccount: TransactionToOneRelationship
+    let category: TransactionToOneRelationship
+    let parentCategory: TransactionToOneRelationship
+    let tags: TransactionToManyRelationship
+    let attachment: TransactionToOneRelationship
+}
+
+/// A JSON:API resource identifier supplied by Up Bank in a relationship.
+struct TransactionRelationshipResource: Codable {
+    let type: String
+    let id: String
+}
+
+/// Links attached to an Up Bank transaction relationship.
+struct TransactionRelationshipLinks: Codable {
+    let related: String?
+    let selfURL: String?
+
+    enum CodingKeys: String, CodingKey {
+        case related
+        case selfURL = "self"
+    }
+}
+
+struct TransactionToOneRelationship: Codable {
+    let data: TransactionRelationshipResource?
+    let links: TransactionRelationshipLinks?
+}
+
+struct TransactionToManyRelationship: Codable {
+    let data: [TransactionRelationshipResource]
+    let links: TransactionRelationshipLinks?
 }
 
 enum TransactionStatus: String, Codable {
