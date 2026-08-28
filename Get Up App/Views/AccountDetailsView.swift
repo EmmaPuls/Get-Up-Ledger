@@ -4,6 +4,7 @@ import SwiftUI
 /// A view that displays the details of accounts.
 struct AccountDetailsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query private var accounts: [Account]
 
     @State private var lastUpdated: Date? =
         UserDefaults.standard.object(forKey: "accountsLastUpdated") as? Date
@@ -15,7 +16,7 @@ struct AccountDetailsView: View {
 
     /// Calculates the maximum width of the balance strings for proper alignment.
     var maxWidthOfBalance: CGFloat {
-        let accounts = networkManager.accounts
+        let accounts = accounts.isEmpty ? networkManager.accounts : accounts
         var widthArray: [CGFloat] = []
         for account in accounts {
             let widthOfBalance = account.attributes.balance.toString().widthOfString(
@@ -23,6 +24,10 @@ struct AccountDetailsView: View {
             widthArray.append(widthOfBalance)
         }
         return widthArray.max() ?? 0
+    }
+
+    var displayedAccounts: [Account] {
+        return accounts.isEmpty ? networkManager.accounts : accounts
     }
 
     var body: some View {
@@ -33,8 +38,8 @@ struct AccountDetailsView: View {
                 NetworkErrorView(error: error)
             } else {
                 List {
-                    if !networkManager.accounts.isEmpty {
-                        ForEach(networkManager.accounts, id: \.id) { account in
+                    if !displayedAccounts.isEmpty {
+                        ForEach(displayedAccounts, id: \.id) { account in
                             NavigationLink(destination: AccountTransactionsView(account: account)) {
                                 HStack {
                                     Text(account.attributes.emoji ?? "").frame(maxWidth: 24)
@@ -69,7 +74,10 @@ struct AccountDetailsView: View {
                 }.padding(16)
             }
         }.onAppear {
-            checkData()
+            // Only fetch from API if no SwiftData accounts exist
+            if accounts.isEmpty {
+                checkData()
+            }
         }
     }
 
